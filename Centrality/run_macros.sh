@@ -20,7 +20,7 @@ g++ nTrkvshiBin_savehist.C $(root-config --cflags --libs) -g -o nTrkvshiBin_save
 g++ nTrkvshiBin_plothist.C $(root-config --cflags --libs) -g -o nTrkvshiBin_plothist.exe
 
 #
-./calibration.exe $FOREST_XeXe "rootfiles/calibration"
+./calibration.exe $FOREST_XeXe rootfiles/calibration
 ./nTrkvshiBin_savehist.exe $FOREST_XeXe rootfiles/output XeXe
 ./nTrkvshiBin_savehist.exe $FOREST_PbPb rootfiles/output PbPb
 ./nTrkvshiBin_plothist.exe rootfiles/output PbPb XeXe
