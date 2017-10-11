@@ -17,14 +17,16 @@ void nTrkvshiBin_savehist(TString inputname, TString outputname, TString collsys
   Float_t hiHF;  xjjroot::setbranchaddress(ntHi, "hiHF", &hiHF);
   Int_t nTrk;  xjjroot::setbranchaddress(ntTrk, "nTrk", &nTrk);
   TFile* infcal;
-  TH1D* hhiHFvshiBin;
+  TH1D* hhiHFvshiBinThreshold;
   if(collsyst=="XeXe")
     {
       infcal = new TFile("rootfiles/calibration.root");
-      hhiHFvshiBin = (TH1D*)infcal->Get("hhiHFvshiBin");
+      hhiHFvshiBinThreshold = (TH1D*)infcal->Get("hhiHFvshiBin");
+      hhiHFvshiBinThreshold->SetName("hhiHFvshiBinThreshold");
     }
 
   TProfile* hnTrkvshiBin = new TProfile("hnTrkvshiBin", ";Centrality (%);<nTrk>", 50, 0, 100, 0, 10000);
+  TProfile* hhiHFvshiBin = new TProfile("hhiHFvshiBin", ";Centrality (%);<hiHF>", 50, 0, 100, 0, 10000);
   TH1D* hnTrk = new TH1D("hnTrk",";nTrk;Events", 100, 0, 10000);
 
   for(int i=0;i<ntHi->GetEntries();i++)
@@ -33,8 +35,9 @@ void nTrkvshiBin_savehist(TString inputname, TString outputname, TString collsys
       ntHi->GetEntry(i);
       ntTrk->GetEntry(i);
       hnTrk->Fill(nTrk);
-      Float_t fillhiBin = (collsyst=="XeXe")?(hhiHFvshiBin->GetBinContent(hhiHFvshiBin->GetXaxis()->FindBin(hiHF))):hiBin;
+      Float_t fillhiBin = (collsyst=="XeXe")?(hhiHFvshiBinThreshold->GetBinContent(hhiHFvshiBinThreshold->GetXaxis()->FindBin(hiHF))):hiBin;
       hnTrkvshiBin->Fill(fillhiBin/2., nTrk);
+      hhiHFvshiBin->Fill(fillhiBin/2., hiHF);
     }
   xjjc::progressbar_summary(ntHi->GetEntries());
   hnTrk->Sumw2();
@@ -43,6 +46,7 @@ void nTrkvshiBin_savehist(TString inputname, TString outputname, TString collsys
   TFile* outf = new TFile(Form("%s_%s.root",outputname.Data(),collsyst.Data()),"recreate");
   outf->cd();
   hnTrkvshiBin->Write();
+  hhiHFvshiBin->Write();
   hnTrk->Write();
   outf->Close();
 
