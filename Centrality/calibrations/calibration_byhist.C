@@ -1,5 +1,4 @@
 #include <iostream>
-#include <algorithm>
 #include <TFile.h>
 #include <TTree.h>
 #include <TH1D.h>
@@ -9,6 +8,8 @@
 #include "../includes/xjjrootuti.h"
 #include "../includes/xjjcuti.h"
 
+const int NhiHF = 40000;
+const float MAXhiHF = 4000;
 const int NhiBin = 200;
 void calibration(TString inputname, TString outputname)
 {
@@ -19,22 +20,32 @@ void calibration(TString inputname, TString outputname)
   ntHi->SetBranchStatus("*", 0);
   Float_t hiHF; xjjroot::setbranchaddress(ntHi, "hiHF", &hiHF);
 
-  std::vector<Float_t> vhiHF;
+  TH1D* hhiHF = new TH1D("hhiHF",";hiHF;Events", NhiHF, 0, MAXhiHF);
   for(int i=0;i<ntHi->GetEntries();i++)
     {
       if(i%1000==0) xjjc::progressbar(i, ntHi->GetEntries());
       ntHi->GetEntry(i);
-      vhiHF.push_back(hiHF);
+      hhiHF->Fill(hiHF);
     }
   xjjc::progressbar_summary(ntHi->GetEntries());
 
-  std::sort(vhiHF.begin(),vhiHF.end());
-
+  Float_t hiHFtotal = hhiHF->Integral();
+  Float_t hiHFcurrent = 0;
+  Float_t hiHFprevious = 0;
   Float_t hiBins[NhiBin+1];
-  hiBins[0] = 0;
-  for(int j=1;j<NhiBin+1;j++)
+  hiBins[NhiBin] = MAXhiHF;
+  Int_t j=1;
+  for(int i=NhiHF;i>0;i--)
     {
-      hiBins[j] = vhiHF[int(j*vhiHF.size()/NhiBin)-1];
+      hiHFprevious = hiHFcurrent;
+      hiHFcurrent += hhiHF->GetBinContent(i);
+      if((hiHFprevious/hiHFtotal)<(j*1.0/NhiBin) && (hiHFcurrent/hiHFtotal)>=(j*1.0/NhiBin))
+        {
+          // check if binning is fine enough
+          if((hiHFcurrent/hiHFtotal)>=((j+1)*1.0/NhiBin)) {std::cout<<"fatal error: "<<j<<std::endl; return;}
+          hiBins[NhiBin-j] = hhiHF->GetBinCenter(i)-hhiHF->GetBinWidth(i)/2.;
+          j++;
+        }
     }
   TH1D* hhiBinvshiHF = new TH1D("hhiHFvshiBin",";hiHF;hiBin", NhiBin, hiBins);
   for(int j=0;j<NhiBin;j++)
