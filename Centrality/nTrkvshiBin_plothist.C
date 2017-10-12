@@ -36,10 +36,18 @@ void nTrkvshiBin_plothist(TString outputname, std::vector<TString> collsyst)
   xjjroot::sethempty(hemptyhnTrkvshiBin, 0, 0.3);
   TH2F* hemptyhhiHFvshiBin = new TH2F("hemptyhhiHFvshiBin",";Centrality (%);<hiHF>", 100, 0, 100, 100, 0, 5000);
   xjjroot::sethempty(hemptyhhiHFvshiBin, 0, 0.3);
-  TH2F* hemptyzoomhnTrkvshiBin = new TH2F("hemptyzoomhnTrkvshiBin","",10, 80, 100, 100, 0, 40);
+  TH2F* hemptyzoomhnTrkvshiBin = new TH2F("hemptyzoomhnTrkvshiBin","",10, 70, 100, 100, 0, 60);
   xjjroot::sethempty(hemptyzoomhnTrkvshiBin);
-  TH2F* hemptyzoomhhiHFvshiBin = new TH2F("hemptyzoomhhiHFvshiBin","",10, 80, 100, 100, 0, 40);
+  hemptyzoomhnTrkvshiBin->GetXaxis()->SetNdivisions(505);
+  hemptyzoomhnTrkvshiBin->GetYaxis()->SetNdivisions(50506);
+  hemptyzoomhnTrkvshiBin->GetXaxis()->SetLabelSize(0.12);
+  hemptyzoomhnTrkvshiBin->GetYaxis()->SetLabelSize(0.12);
+  TH2F* hemptyzoomhhiHFvshiBin = new TH2F("hemptyzoomhhiHFvshiBin","",10, 70, 100, 100, 0, 60);
   xjjroot::sethempty(hemptyzoomhhiHFvshiBin);
+  hemptyzoomhhiHFvshiBin->GetXaxis()->SetNdivisions(505);
+  hemptyzoomhhiHFvshiBin->GetYaxis()->SetNdivisions(50506);
+  hemptyzoomhhiHFvshiBin->GetXaxis()->SetLabelSize(0.12);
+  hemptyzoomhhiHFvshiBin->GetYaxis()->SetLabelSize(0.12);
 
   TCanvas* chnTrkvshiBin = new TCanvas("chnTrkvshiBin","",600,600);
   hemptyhnTrkvshiBin->Draw();
